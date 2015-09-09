@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <form action="/echo" method="POST">
+        <input name="text">
+        <input type="submit" class="form-control" value="Echo">
+    </form>
+</div>
+{% endblock %}
