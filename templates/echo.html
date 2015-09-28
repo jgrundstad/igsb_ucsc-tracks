@@ -1,9 +1,14 @@
-{% extends "base.html" %}
+{% extends "bootstrap/base.html" %}
+{% block title %}
+HerpDerp!
+{% endblock %}
 {% block content %}
-<div class="container">
-    <form action="/echo" method="POST">
+
+<form role="form" action="/echo" method="POST">
+    <div class="form-group">
         <input name="text">
-        <input type="submit" class="form-control" value="Echo">
-    </form>
-</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Echo</button>
+</form>
+
 {% endblock %}

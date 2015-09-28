@@ -10,8 +10,7 @@ app = Flask(__name__, template_folder=template_dir)
 
 @app.route("/")
 def hello():
-    genomes = config['genomes']
-    return render_template('select.html', genomes=genomes)
+    render_template('/echo.html')
 
 @app.route("/show_available_tracks", methods=['POST'])
 def echo():
