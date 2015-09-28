@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<style>
+    td {
+        font-family: monospace !important;
+        vertical-align: middle !important;
+    }
+    input[type=checkbox] {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        line-height: normal;
+    }
+</style>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('select[name=genome_select]').change(function() {
+        var cboxes = $('#bw_checkboxes');
+        var genome = $(this).val();
+        console.log('Selected genome: ' + genome);
+    });
+
+    $('#checkAll').click(function() {
+        $(".check").prop('checked', $(this).prop('checked'));
+    });
+
+});
+</script>
+{% endblock %}
+{% block content %}
+<div id="genome_selection_container" class="container">
+    <form id="genome_selection_form" method="post" class="form col-sm-6"
+          role="form" action="show_available_tracks">
+        <div class="col-sm-8">
+            <select class="form-control" name="genome_select">
+                <option selected="selected">-- select genome --</option>
+                {% for g in genomes %}
+                    <option>{{g}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <button class="btn btn-primary" type="submit">
+                <span class="fa fa-refresh">&nbsp;Show Available BWs</span>
+            </button>
+        </div>
+    </form>
+</div>
+<br><br>
+<div class="container" id="bigwigs">
+    {% if genome_path %}
+    <div id="new_link" style="padding: 15px 3px">
+        <button class="btn btn-success" type="submit">
+            <span class="fa fa-external-link-square">&nbsp;I want to go to there</span>
+        </button>
+    </div>
+    {% endif %}
+    {% if genome_path %}
+    <h3>Select tracks to be made visible:</h3>
+    {% endif %}
+    <table class="table table-condensed">
+        <thead>
+        {% if genome_path %}
+        <tr>
+            <th>
+                <input type="checkbox" class="check" id="checkAll">
+            </th>
+            <th>
+                all/none
+            </th>
+            <th>
+                Short Label
+            </th>
+            <th>
+                Long Label
+            </th>
+
+        </tr>
+        {% endif %}
+        </thead>
+        <tbody>
+    {% for track in tracks %}
+    <tr>
+        <td>
+            <input type="checkbox" class="check" value="{{track}}" style="">
+        </td>
+        <td>{{track}}</td>
+        <td>{{tracks[track]['shortLabel']}}</td>
+        <td>{{tracks[track]['longLabel']}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</div>
+
+{% endblock %}
