@@ -1,0 +1,9 @@
+td {
+    font-family: monospace !important;
+    vertical-align: middle !important;
+}
+input[type=checkbox] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: normal;
+}
