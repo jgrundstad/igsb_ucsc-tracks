@@ -1,69 +1,8 @@
 {% extends "base.html" %}
+
 {% block extra_js %}
-<style>
-    td {
-        font-family: monospace !important;
-        vertical-align: middle !important;
-    }
-    input[type=checkbox] {
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-        line-height: normal;
-    }
-</style>
-<script type="text/javascript">
-
-
-$(document).ready(function() {
-    $('select[name=genome_select]').change(function() {
-        var cboxes = $('#bw_checkboxes');
-        var genome = $(this).val();
-        console.log('Selected genome: ' + genome);
-    });
-
-    if ($('select[name=genome_select]')) {
-        build_filter($('select[name=genome_select]').val());
-    };
-
-    $('#checkAll').click(function() {
-        $(".check").prop('checked', $(this).prop('checked'));
-    });
-
-    $('#genLinkOut').click(function() {
-        console.log("Clicked the linkOut button");
-        var selected = [];
-        $('#bigwigs input:checked').each(function (){
-            selected.push($(this).attr('value'));
-        });
-        trackString = selected.join();
-        console.log(trackString);
-
-        // new link-out button to appear on click
-        selected_genome = $('#genome_select option:selected').text();
-        var linkButton = $('<button/>', {
-            class: 'btn btn-success',
-            text: 'I want to go to there ',
-            click: function () {
-                $.get('/update_trackDB', {
-                    selected_genome: selected_genome,
-                    tracks: trackString
-                }).done(function () {
-                    console.log("Success!");
-                });
-            },
-        }).append($('<span></span>').addClass('fa').addClass('fa-external-link-square'));
-
-        $('#linkOutDiv').html(linkButton);
-
-
-        <!--var newButt = $('<button class="btn btn-success" type="submit" id="goToLink">'+-->
-                         <!--'<span class="fa fa-external-link-square">&nbspI want to go to there</span>');-->
-        <!--$('#linkOutDiv').html(newButt);-->
-    });
-
-
-});
-</script>
+<script src="../static/js/track_selector.js"></script>
+<link rel="stylesheet" href="../static/css/track_selector.css">
 {% endblock %}
 {% block content %}
 <div id="main_selection_container" class="container">
@@ -87,27 +26,32 @@ $(document).ready(function() {
             </button>
         </div>
         {% if genome_path %}
-        <br>
         <div class="container col-sm-12">
             <h3>Select tracks to be made visible:</h3>
         </div>
-        <div class="col-sm-8" id="filter_select_container">
 
-        </div>
-        <div id="linksDiv" style="padding: 10px 0px;">
-            <div class="container col-sm-2" id="genLinkDiv">
-                <button class="btn btn-success" type="button" id="genLinkOut">
-                    <span class="fa fa-recycle">&nbsp;Generate link-out</span>
-                </button>
-            </div>
-            <div class="container col-sm-10" id="linkOutDiv">
+        <div class="col-sm-6" id="left_linkDb">
+            <div class="col-sm-6" id="filter_select_container">
 
             </div>
+            <div class="input-group col-sm-6">
+                <span class="input-group-addon">Name</span>
+                <input type="text" class="form-control" id="linkDbName"
+                        placeholder="Name of track collection">
+
+            </div>
         </div>
-        <div></div>
+        <div class="container col-sm-2" id="genLinkDiv">
+            <button class="btn btn-success" type="button" id="genLinkOut">
+                <span class="fa fa-recycle">&nbsp;Generate link-out</span>
+            </button>
+        </div>
+        <div class="container col-sm-3" id="linkOutDiv">
+        </div>
+
 
         {% endif %}
-        <div class="container col-sm-12">
+        <div class="container col-sm-12" style="padding-top: 10px;">
             <table class="table table-condensed">
                 <thead>
                 {% if genome_path %}
@@ -130,7 +74,7 @@ $(document).ready(function() {
                 </thead>
                 <tbody>
                 {% for track in tracks %}
-                    <tr>
+                    <tr id="tracks['track']['longLabel']">
                         <td>
                             <input type="checkbox" class="check" value="{{track}}" name="track">
                         </td>
