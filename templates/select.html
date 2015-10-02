@@ -12,6 +12,8 @@
     }
 </style>
 <script type="text/javascript">
+
+
 $(document).ready(function() {
     $('select[name=genome_select]').change(function() {
         var cboxes = $('#bw_checkboxes');
@@ -19,77 +21,128 @@ $(document).ready(function() {
         console.log('Selected genome: ' + genome);
     });
 
+    if ($('select[name=genome_select]')) {
+        build_filter($('select[name=genome_select]').val());
+    };
+
     $('#checkAll').click(function() {
         $(".check").prop('checked', $(this).prop('checked'));
     });
+
+    $('#genLinkOut').click(function() {
+        console.log("Clicked the linkOut button");
+        var selected = [];
+        $('#bigwigs input:checked').each(function (){
+            selected.push($(this).attr('value'));
+        });
+        trackString = selected.join();
+        console.log(trackString);
+
+        // new link-out button to appear on click
+        selected_genome = $('#genome_select option:selected').text();
+        var linkButton = $('<button/>', {
+            class: 'btn btn-success',
+            text: 'I want to go to there ',
+            click: function () {
+                $.get('/update_trackDB', {
+                    selected_genome: selected_genome,
+                    tracks: trackString
+                }).done(function () {
+                    console.log("Success!");
+                });
+            },
+        }).append($('<span></span>').addClass('fa').addClass('fa-external-link-square'));
+
+        $('#linkOutDiv').html(linkButton);
+
+
+        <!--var newButt = $('<button class="btn btn-success" type="submit" id="goToLink">'+-->
+                         <!--'<span class="fa fa-external-link-square">&nbspI want to go to there</span>');-->
+        <!--$('#linkOutDiv').html(newButt);-->
+    });
+
 
 });
 </script>
 {% endblock %}
 {% block content %}
-<div id="genome_selection_container" class="container">
+<div id="main_selection_container" class="container">
     <form id="genome_selection_form" method="post" class="form col-sm-6"
-          role="form" action="show_available_tracks">
-        <div class="col-sm-8">
-            <select class="form-control" name="genome_select">
+          role="form" action="show_available_tracks" style="width: 100%">
+        <div class="container col-sm-8" id="genome_select_container">
+            <select class="form-control" name="genome_select" id="genome_select">
                 <option selected="selected">-- select genome --</option>
                 {% for g in genomes %}
-                    <option>{{g}}</option>
+                    {% if g == genome %}
+                        <option selected="selected">{{g}}</option>
+                    {% else %}
+                        <option>{{g}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
-        <div class="col-sm-3">
-            <button class="btn btn-primary" type="submit">
+        <div class="container col-sm-3" id="show_BWs_container">
+            <button class="btn btn-primary" type="submit" id="showBWs">
                 <span class="fa fa-refresh">&nbsp;Show Available BWs</span>
             </button>
         </div>
-    </form>
-</div>
-<br><br>
-<div class="container" id="bigwigs">
-    {% if genome_path %}
-    <div id="new_link" style="padding: 15px 3px">
-        <button class="btn btn-success" type="submit">
-            <span class="fa fa-external-link-square">&nbsp;I want to go to there</span>
-        </button>
-    </div>
-    {% endif %}
-    {% if genome_path %}
-    <h3>Select tracks to be made visible:</h3>
-    {% endif %}
-    <table class="table table-condensed">
-        <thead>
         {% if genome_path %}
-        <tr>
-            <th>
-                <input type="checkbox" class="check" id="checkAll">
-            </th>
-            <th>
-                all/none
-            </th>
-            <th>
-                Short Label
-            </th>
-            <th>
-                Long Label
-            </th>
+        <br>
+        <div class="container col-sm-12">
+            <h3>Select tracks to be made visible:</h3>
+        </div>
+        <div class="col-sm-8" id="filter_select_container">
 
-        </tr>
+        </div>
+        <div id="linksDiv" style="padding: 10px 0px;">
+            <div class="container col-sm-2" id="genLinkDiv">
+                <button class="btn btn-success" type="button" id="genLinkOut">
+                    <span class="fa fa-recycle">&nbsp;Generate link-out</span>
+                </button>
+            </div>
+            <div class="container col-sm-10" id="linkOutDiv">
+
+            </div>
+        </div>
+        <div></div>
+
         {% endif %}
-        </thead>
-        <tbody>
-    {% for track in tracks %}
-    <tr>
-        <td>
-            <input type="checkbox" class="check" value="{{track}}" style="">
-        </td>
-        <td>{{track}}</td>
-        <td>{{tracks[track]['shortLabel']}}</td>
-        <td>{{tracks[track]['longLabel']}}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-    </table>
+        <div class="container col-sm-12">
+            <table class="table table-condensed">
+                <thead>
+                {% if genome_path %}
+                <tr>
+                    <th>
+                        <input type="checkbox" class="check" id="checkAll">
+                    </th>
+                    <th>
+                        all/none
+                    </th>
+                    <th>
+                        Short Label
+                    </th>
+                    <th>
+                        Long Label
+                    </th>
+
+                </tr>
+                {% endif %}
+                </thead>
+                <tbody>
+                {% for track in tracks %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="check" value="{{track}}" name="track">
+                        </td>
+                        <td>{{track}}</td>
+                        <td>{{tracks[track]['shortLabel']}}</td>
+                        <td>{{tracks[track]['longLabel']}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
 </div>
 
 {% endblock %}
